@@ -4,7 +4,7 @@ body {
   font-size: 16px;
   margin: 0 auto;
   padding: 0;
-  background: #FFF; 
+  background: #FFF;
 }
 #sidebar {
   float: right;
@@ -12,12 +12,10 @@ body {
   height: ;
   padding: 16px;
   margin: 0 10px 10px 10px;
-  background: #FFF;
 }
 #main {
   padding: 16px;
-  margin: 10px 350px 10px 10px;
-  background: #FFF;
+  margin: 10px 352px 10px 10px;
   min-width: 340px
 }
 #contact img {
