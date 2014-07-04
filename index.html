@@ -3,19 +3,11 @@
   <head>
     <title>Megan M. O'Neill</title>
     <link href="styles/main.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="components/react/react.min.js"></script>
+    <script type="text/javascript" src="components/react/JSXTransformer.js"></script>
   </head>
   <body>
-    <div id="sidebar">
-      <div id="contact">
-        <div id="image">
-          <img alt="Megan" src="images/megan2.jpg" />
-        </div>
-        <h1 id="name">Megan M. O'Neill</h1>
-        <div id="summary">
-          <span class="text">A seasoned professional with 15 years of experience in software development for financial services, health care, and non-profit industries. A demonstrated ability to master and excel in a wide range of technologies including web, mobile, and enterprise solutions. A strong track record as team lead and facilitating cross-team collaboration in developing high quality deliverables. Full knowledge of all aspects of the Software Development Life Cycle (SDLC) and fluent in Agile development methodologies.</span>
-        </div>
-      </div>
-    </div>
+    <div id="sidebar"></div>
     <div id="main">
       <div id="experience">
         <div class="job">
@@ -139,5 +131,60 @@
         </div>
       </div>
     </div>
+    <script type="text/jsx">
+      /** @jsx React.DOM */
+
+      var name = "Megan M. O'Neill";
+      var summary_text = "A seasoned professional with 15 years of experience in software development for financial services, health care, and non-profit industries. A demonstrated ability to master and excel in a wide range of technologies including web, mobile, and enterprise solutions. A strong track record as team lead and facilitating cross-team collaboration in developing high quality deliverables. Full knowledge of all aspects of the Software Development Life Cycle (SDLC) and fluent in Agile development methodologies.";
+
+      var ContactSummary = React.createClass({
+        render: function() {
+          return (
+            <div id="summary">
+              <span className="text">
+                {this.props.text}
+              </span>
+            </div>
+          );
+        }
+      });
+
+      var ContactName = React.createClass({
+        render: function() {
+          return (
+            <h1 id="name">
+              {this.props.name}
+            </h1>
+          );
+        }
+      });
+
+      var ContactImage = React.createClass({
+        render: function() {
+          return (
+            <div id="image">
+              <img alt={this.props.name} src={this.props.image} />
+            </div>
+          );
+        }
+      });
+
+      var Contact = React.createClass({
+        render: function() {
+          return (
+            <div id="contact">
+              <ContactImage name={name} image="images/megan2.jpg" />
+              <ContactName name={name} />
+              <ContactSummary text={summary_text} />
+            </div>
+          );
+        }
+      });
+
+      React.renderComponent(
+        <Contact />,
+        document.getElementById('sidebar')
+      );
+    </script>
   </body>
 </html>
