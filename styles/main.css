@@ -63,12 +63,12 @@ body {
   width: 300px;
   text-align: right;
 }
-#experience .text p {
+#experience .text {
   margin: 8px 0;
   text-align: justify;
   font-size: 18px;
 }
-#experience .text .context {
+#experience .project .context {
   color: #AAA;
 }
 .technologies {
