@@ -31,9 +31,26 @@ var ContactImage = React.createClass({displayName: 'ContactImage',
   }
 });
 
+var ContactLinks = React.createClass({displayName: 'ContactLinks',
+  render: function() {
+    return (
+      React.DOM.div( {className:"links"}, 
+        React.DOM.a( {href:"mailto:" + this.props.data.email}, React.DOM.span( {className:"email"}, "email")),
+        React.DOM.a( {href:"//twitter.com/" + this.props.data.twitter}, React.DOM.span( {className:"twitter"}, "twitter")),
+        React.DOM.a( {href:"//github.com/" + this.props.data.github}, React.DOM.span( {className:"github"}, "github"))
+      )
+    );
+  }
+});
+
 var Contact = React.createClass({displayName: 'Contact',
   getInitialState: function() {
-    return {data: {name: '', image: '', text: ''}};
+    return {data: {name: '', 
+                   image: '', 
+                   text: '',
+                   email: '',
+                   twitter: '',
+                   github: ''}};
   },    
   componentWillMount: function() {
     $.ajax({
@@ -52,7 +69,8 @@ var Contact = React.createClass({displayName: 'Contact',
       React.DOM.div( {className:"contact"}, 
         ContactImage( {name:this.state.data.name, image:this.state.data.image} ),
         ContactName( {name:this.state.data.name} ),
-        ContactSummary( {text:this.state.data.text} )
+        ContactSummary( {text:this.state.data.text} ),
+        ContactLinks( {data:this.state.data} )
       )
     );
   }

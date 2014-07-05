@@ -23,6 +23,22 @@ body {
   height: 300px;
   border-radius: 16px;
 }
+.contact .links {
+  margin-top: 16px;
+  text-align: right;
+}
+.contact .links span {
+  font-size: 26px;
+  padding-left: 16px;
+}
+.contact .links a {
+  color: #666;
+  text-decoration: none;
+}
+.contact .links a:hover {
+  color: #000;
+  text-decoration: none;
+}
 .name {
   font-size: 36px;
   color: #000;
@@ -80,6 +96,6 @@ body {
   text-align: left;
 }
 .technologies li { 
-  display: inline;
+  display: inline-block;
   padding-right: 8px;
 }
