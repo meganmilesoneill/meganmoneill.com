@@ -62,7 +62,7 @@ var data = {contact: {name: "Megan M. O'Neill",
                 end_date: "April 2002",
                 projects: [{
                   context: "a major investment bank",
-                  text: "Architected and led the development effort on a custom workflow-based CMS for sharing market update content in video format. Created a first-to-market extranet portal to provide convertible bond financial data to the bank&#8217;s clients. Collaborated with graphic and UX designers to create extranet brochure site for the TechBanking department."
+                  text: "Architected and led the development effort on a custom workflow-based CMS for sharing market update content in video format. Created a first-to-market extranet portal to provide convertible bond financial data to the bank's clients. Collaborated with graphic and UX designers to create extranet brochure site for the TechBanking department."
                 }],
                 technologies: ["XML", "ASP", "MSMQ", "Visual Basic", "JavaScript", "Microsoft SQL Server 2000"]
               },
@@ -143,7 +143,7 @@ var JobDuration = React.createClass({
   render: function() {
     return (
       <div className="time">
-        <span className="startdate">{this.props.data.start_date}</span> &ndash; <span className="enddate">{this.props.data.end_date}</span>
+        <span className="startdate">{this.props.data.start_date}</span>{" \u2013 "}<span className="enddate">{this.props.data.end_date}</span>
       </div>
     );
   }
