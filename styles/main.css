@@ -18,22 +18,22 @@ body {
   margin: 10px 352px 10px 10px;
   min-width: 340px
 }
-#contact img {
+.contact img {
   width: 300px;
   height: 300px;
   border-radius: 16px;
 }
-#name {
+.name {
   font-size: 36px;
   color: #000;
   margin: 0;
   padding: 0 0 10px 0;
   text-align: right;
 }
-#summary {
+.summary {
   text-align: right; 
 }
-#summary .text {
+.summary .text {
   font-size: 14px;
   color: #666;
 }
@@ -63,12 +63,12 @@ body {
   width: 300px;
   text-align: right;
 }
-#experience .text {
+.experience .text {
   margin: 8px 0;
   text-align: justify;
   font-size: 18px;
 }
-#experience .project .context {
+.experience .project .context {
   color: #AAA;
 }
 .technologies {
