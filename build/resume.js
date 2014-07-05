@@ -58,10 +58,10 @@ var Contact = React.createClass({displayName: 'Contact',
   }
 });
 
-var JobLocation = React.createClass({displayName: 'JobLocation',
+var JobLocations = React.createClass({displayName: 'JobLocations',
   render: function() {
     return (
-      React.DOM.span( {className:"location"}, this.props.data.join(" | "))    
+      React.DOM.span( {className:"locations"}, this.props.data.join(" | "))    
     );
   }
 });
@@ -79,8 +79,8 @@ var JobDuration = React.createClass({displayName: 'JobDuration',
 var JobDimensions = React.createClass({displayName: 'JobDimensions',
   render: function() {
     return (
-      React.DOM.div( {className:"timeandplace"}, 
-        JobLocation( {data:this.props.data.locations} ),
+      React.DOM.div( {className:"dimensions"}, 
+        JobLocations( {data:this.props.data.locations} ),
         JobDuration( {data:this.props.data} )
       )
     );

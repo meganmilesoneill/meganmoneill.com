@@ -58,10 +58,10 @@ var Contact = React.createClass({
   }
 });
 
-var JobLocation = React.createClass({
+var JobLocations = React.createClass({
   render: function() {
     return (
-      <span className="location">{this.props.data.join(" | ")}</span>    
+      <span className="locations">{this.props.data.join(" | ")}</span>    
     );
   }
 });
@@ -79,8 +79,8 @@ var JobDuration = React.createClass({
 var JobDimensions = React.createClass({
   render: function() {
     return (
-      <div className="timeandplace">
-        <JobLocation data={this.props.data.locations} />
+      <div className="dimensions">
+        <JobLocations data={this.props.data.locations} />
         <JobDuration data={this.props.data} />
       </div>
     );
