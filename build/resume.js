@@ -35,9 +35,9 @@ var ContactLinks = React.createClass({displayName: 'ContactLinks',
   render: function() {
     return (
       React.DOM.div( {className:"links"}, 
-        React.DOM.a( {href:"mailto:" + this.props.data.email}, React.DOM.span( {className:"email"}, "email")),
-        React.DOM.a( {href:"//twitter.com/" + this.props.data.twitter}, React.DOM.span( {className:"twitter"}, "twitter")),
-        React.DOM.a( {href:"//github.com/" + this.props.data.github}, React.DOM.span( {className:"github"}, "github"))
+        this.props.data.email ? React.DOM.a( {href:"mailto:" + this.props.data.email}, React.DOM.span( {className:"email"}, "email")) : '',
+        this.props.data.twitter ? React.DOM.a( {href:"//twitter.com/" + this.props.data.twitter}, React.DOM.span( {className:"twitter"}, "twitter")) : '',
+        this.props.data.github ? React.DOM.a( {href:"//github.com/" + this.props.data.github}, React.DOM.span( {className:"github"}, "github")) : ''
       )
     );
   }
@@ -45,12 +45,7 @@ var ContactLinks = React.createClass({displayName: 'ContactLinks',
 
 var Contact = React.createClass({displayName: 'Contact',
   getInitialState: function() {
-    return {data: {name: '', 
-                   image: '', 
-                   text: '',
-                   email: '',
-                   twitter: '',
-                   github: ''}};
+    return {data: {name: '', image: '', text: ''}};
   },    
   componentWillMount: function() {
     $.ajax({

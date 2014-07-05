@@ -35,9 +35,9 @@ var ContactLinks = React.createClass({
   render: function() {
     return (
       <div className="links">
-        <a href={"mailto:" + this.props.data.email}><span className="email">email</span></a>
-        <a href={"//twitter.com/" + this.props.data.twitter}><span className="twitter">twitter</span></a>
-        <a href={"//github.com/" + this.props.data.github}><span className="github">github</span></a>
+        {this.props.data.email ? <a href={"mailto:" + this.props.data.email}><span className="email">email</span></a> : ''}
+        {this.props.data.twitter ? <a href={"//twitter.com/" + this.props.data.twitter}><span className="twitter">twitter</span></a> : ''}
+        {this.props.data.github ? <a href={"//github.com/" + this.props.data.github}><span className="github">github</span></a> : ''}
       </div>
     );
   }
@@ -45,12 +45,7 @@ var ContactLinks = React.createClass({
 
 var Contact = React.createClass({
   getInitialState: function() {
-    return {data: {name: '', 
-                   image: '', 
-                   text: '',
-                   email: '',
-                   twitter: '',
-                   github: ''}};
+    return {data: {name: '', image: '', text: ''}};
   },    
   componentWillMount: function() {
     $.ajax({
