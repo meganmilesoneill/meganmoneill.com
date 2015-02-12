@@ -1,0 +1,66 @@
+curl -XPOST localhost:9200/earthquake-data -d '{
+    "settings" : {
+        "number_of_shards" : 1
+    },
+    "mappings" : {
+      "earthquake" : {
+        "properties" : {
+          "type" : {"type" : "string", "index" : "not_analyzed"},
+          "properties" : {
+            "type" : "object",
+            "properties" : {
+              "mag" : { "type" : "float" }, 
+              "place" : { "type" : "string" }, 
+              "time" : { "type" : "long" }, 
+              "updated" : { "type" : "string" }, 
+              "tz" : { "type" : "integer" }, 
+              "url" : { "type" : "string" }, 
+              "detail" : { "type" : "string" }, 
+              "felt" : { "type" : "string" }, 
+              "cdi" : { "type" : "string" }, 
+              "mmi" : { "type" : "string" }, 
+              "alert" : { "type" : "string" }, 
+              "status" : { "type" : "string" }, 
+              "tsunami" : { "type" : "integer" }, 
+              "sig" : { "type" : "integer" }, 
+              "net" : { "type" : "string" }, 
+              "code" : { "type" : "string" }, 
+              "ids" : { "type" : "string" }, 
+              "sources" : { "type" : "string" }, 
+              "types" : { "type" : "string" }, 
+              "nst" : { "type" : "integer" }, 
+              "dmin" : { "type" : "double" }, 
+              "rms" : { "type" : "double" }, 
+              "gap" : { "type" : "double" }, 
+              "magType" : { "type" : "string" }, 
+              "type" : { "type" : "string" }, 
+              "title" : { "type" : "string" } 
+            }
+          },
+          "geometry" : {"type" : "geo_shape"},
+          "id" : {"type" : "string"}
+        }
+      }
+    }
+}'
+
+GET earthquake-data/_search
+{
+    "query":{
+        "filtered": {
+            "query": {
+                "match_all": {}
+            },
+            "filter": {
+                "geo_shape": {
+                    "geometry": {
+                        "shape": {
+                            "type": "envelope",
+                            "coordinates" : [[-125.69510773828125, 38.37098405266182], [-119.31754426171875, 37.1156872105975]]
+                        }
+                    }
+                }
+            }
+        }
+    }
+} 
