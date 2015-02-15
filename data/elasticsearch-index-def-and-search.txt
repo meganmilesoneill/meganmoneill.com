@@ -43,24 +43,3 @@ curl -XPOST localhost:9200/earthquake-data -d '{
       }
     }
 }'
-
-GET earthquake-data/_search
-{
-    "query":{
-        "filtered": {
-            "query": {
-                "match_all": {}
-            },
-            "filter": {
-                "geo_shape": {
-                    "geometry": {
-                        "shape": {
-                            "type": "envelope",
-                            "coordinates" : [[-125.69510773828125, 38.37098405266182], [-119.31754426171875, 37.1156872105975]]
-                        }
-                    }
-                }
-            }
-        }
-    }
-} 

@@ -19,6 +19,16 @@
       font-family: Arial, Tahoma;
       font-size: small;
     }
+    #bounds-box {
+      background-color: white;
+      border: 1px solid black;
+      top: 30px;
+      padding: 10px;
+      position: absolute;
+      left: 30px;
+      font-family: Arial, Tahoma;
+      font-size: small;
+    }
     </style>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
@@ -42,38 +52,77 @@ var mapStyle = [{
   'stylers': [{'visibility': 'on'}, {'hue': '#5f94ff'}, {'lightness': 60}]
 }];
 
+function getMapData(coordinates){
+  var earthquakeDataAPI = "http://localhost:8092/earthquake-data/_search";
+  var earthquakeSearchBody = {
+    "size" : 1000,
+    "fields" : ["_source"],
+    "query":{
+      "filtered": {
+        "query": {
+          "geo_shape": {
+            "geometry": {
+              "shape": {
+                "type": "envelope",
+                "coordinates" : coordinates
+              }
+            }
+          }
+        },
+      }
+    }
+  };
+  $.ajax({
+      url: earthquakeDataAPI,
+      type: 'POST',
+      crossDomain: true,
+      dataType: 'json',
+      data: JSON.stringify(earthquakeSearchBody),
+      success: function(response) {
+          var data = response.hits.hits;
+          var mapData = {
+            "type" : "FeatureCollection",
+            "features": []
+          };
+          for(i = 0; i < data.length; i++){
+            mapData.features.push(data[i]._source);
+          };
+       
+          map.data.addGeoJson(mapData);
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+          var jso = jQuery.parseJSON(jqXHR.responseText);
+          error_note('section', 'error', '(' + jqXHR.status + ') ' + errorThrown + ' --<br />' + jso.error);
+      }
+  });
+}
 
 google.maps.event.addDomListener(window, 'load', function() {
-  //debugger;
-  console.log('window.load')
   map = new google.maps.Map(document.getElementById('map-canvas'), {
     center: { lat: 37.745997, lng: -122.506326 },
     zoom: 8,
     styles: mapStyle
   });
 
+  google.maps.event.addListener(map, 'idle', function() {
+    var bounds =  map.getBounds();
+    coordinates = [[bounds.getSouthWest().lng(), bounds.getNorthEast().lat()], [bounds.getNorthEast().lng(), bounds.getSouthWest().lat()]];
+    $("#bounds-box").html(populateBoundsCoordinates(coordinates));
+    getMapData(coordinates);
+  });
+
   map.data.setStyle(styleFeature);
-
-  // var ctaLayer = new google.maps.KmlLayer({
-  //   url: '../data/Quaternary.kmz'
-  // });
-  // ctaLayer.setMap(map);
-  // console.log('kmz layer added');
-
   map.data.addListener('mouseover', function(event) {
     $("#info-box").html(populateInfo(event.feature));
   });
-  console.log('adding earthquake events')
-  $.getJSON( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_month.geojson", function( data ) {
-    map.data.addGeoJson(data);
-    console.log(map.getBounds().getNorthEast());
-    console.log(map.getBounds().getSouthWest());
-  });
-  // console.log('adding fault line features')
-  // $.getJSON( "../data/quaternary.geojson", function( data ) {
-  //   map.data.addGeoJson(data);
-  // });
 });
+
+function populateBoundsCoordinates(coorindates){
+  var boundsCoordinates = "Bounds Coordinates: <br/>";
+  boundsCoordinates += "NW: [" + coorindates[0][0] + ", " + coordinates[0][1] + "]<br/>"
+  boundsCoordinates += "SE: [" + coordinates[1][0] + ", " + coordinates[1][1] + "]";
+  return boundsCoordinates;
+}
 
 function populateInfo(data){
   var info = "";
@@ -132,5 +181,6 @@ function interpolateHsl(lowHsl, highHsl, fraction) {
   <body id="map-container">
     <div id="map-canvas"></div>
     <div id="info-box">Hover over an event for more details</div>
+    <div id="bounds-box">Bound Coordinates: </div>
   </body>
 </html>
