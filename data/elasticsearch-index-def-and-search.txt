@@ -40,6 +40,20 @@ curl -XPOST localhost:9200/earthquake-data -d '{
           "geometry" : {"type" : "geo_shape"},
           "id" : {"type" : "string"}
         }
-      }
+      },
+      "fault" : {
+        "properties" : {
+          "type" : {"type" : "string", "index" : "not_analyzed"},
+          "properties" : {
+            "type" : "object",
+            "properties" : {
+              "name" : { "type" : "string" }, 
+              "url" : { "type" : "string" }
+            }
+          },
+          "geometry" : {"type" : "geo_shape"},
+          "id" : {"type" : "string"}
+        }
+
     }
 }'
