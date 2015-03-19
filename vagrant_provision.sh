@@ -20,13 +20,15 @@ sudo apt-get install -y debconf-utils
 
 echo
 echo **************************************************
-echo Installing MySQL 5.5
+echo Installing MySQL 5.6
 echo **************************************************
+# sudo apt-get install -y libaio1
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password p@ssw0rd'
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password p@ssw0rd'
-sudo apt-get install -y mysql-server --fix-missing --fix-broken
+sudo apt-get install -y mysql-server-5.6 --fix-missing --fix-broken
 sudo apt-get install -y libmysqlclient-dev
-sudo apt-get install -y mysql-client-5.5 libapache2-mod-auth-mysql
+sudo apt-get install -y mysql-client-5.6
+#sudo apt-get install -y libapache2-mod-auth-mysql
 
 echo
 echo **************************************************
@@ -43,14 +45,16 @@ sudo apt-get install -y python-software-properties
 sudo apt-get install -y python-setuptools python-dev build-essential 
 sudo easy_install pip 
 sudo pip install --upgrade virtualenv
+sudo apt-get install -y python-bs4
 
 echo
 echo **************************************************
 echo Installing python-mysql
 echo **************************************************
 
-suo apt-get install -y python-dev libmysqlclient-dev
+sudo apt-get install -y python-dev libmysqlclient-dev
 pip install MySQL-python
+sudo dpkg -i mysql-connector-python_2.0.3-1ubuntu14.04_all.deb
 
 sudo apt-get update -y
 

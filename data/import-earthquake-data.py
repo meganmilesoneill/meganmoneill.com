@@ -25,4 +25,4 @@ for feature in data['features']:
 response.close();
 
 cursor.close()
-connection.close();	
+connection.close()
