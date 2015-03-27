@@ -35,15 +35,22 @@ CREATE TABLE IF NOT EXISTS earthquake (
 	title		VARCHAR(255),
 	location 	POINT NOT NULL,
 	depth		DOUBLE,
-	SPATIAL INDEX (location)
+	source 		TEXT,
+	faultid 	INTEGER,
+	faultdist	DOUBLE,
+	SPATIAL INDEX (location),
+	CONSTRAINT const_eventid UNIQUE (eventid)
 )  ENGINE=MyISAM;
 
 DROP TABLE IF EXISTS fault;
 
 CREATE TABLE IF NOT EXISTS fault (
 	id 			INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY,
+	faultid		INTEGER,
+	section		VARCHAR(10),
 	name		VARCHAR(255),
 	url			VARCHAR(255),
 	shape		MULTILINESTRING NOT NULL,
+	source 		TEXT,
 	SPATIAL INDEX (shape)
 ) ENGINE=MyISAM;

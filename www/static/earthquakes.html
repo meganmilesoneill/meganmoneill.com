@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <style type="text/css">
+    html, body{
+      height: 100%;
+      margin: 0px;
+      padding: 0px      
+    }
+    #map-canvas {
+      height: 80%;
+      margin: 0px;
+      padding: 0px
+    }
+    #info-panel {
+      height: 20%;
+      margin: 0px;
+      padding: 10px;
+    }
+    #info-box {
+      background-color: white;
+      border: 1px solid black;/*
+      bottom: 30px;
+      padding: 10px;
+      position: absolute;
+      left: 30px;*/
+      font-family: Arial, Tahoma;
+      font-size: small;
+    }
+    #config-box {
+      background-color: white;
+      border: 1px solid black;  
+    }
+    #bounds-box {
+      background-color: white;
+      border: 1px solid black;
+      /*
+      top: 30px;
+      padding: 10px;
+      position: absolute;*/
+      font-family: Arial, Tahoma;
+      font-size: small;
+    }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true"></script>
+    <script type="text/javascript" src="/static/js/date.js"></script>
+    <script>
+var map;
+var mapStyle = [{
+  'featureType': 'all',
+  'elementType': 'all',
+  'stylers': [{'visibility': 'off'}]
+}, {
+  'featureType': 'landscape',
+  'elementType': 'geometry',
+  'stylers': [{'visibility': 'on'}, {'color': '#fcfcfc'}]
+}, {
+  'featureType': 'water',
+  'elementType': 'labels',
+  'stylers': [{'visibility': 'off'}]
+}, {
+  'featureType': 'water',
+  'elementType': 'geometry',
+  'stylers': [{'visibility': 'on'}, {'hue': '#5f94ff'}, {'lightness': 60}]
+}];
+var minDate = (30).days().ago();
+//minDate = new Date(minDate.setMonth(minDate.getMonth() - 1));
+var maxDate = new Date();
+console.log("minDate: " + minDate);
+console.log("maxDate: " + maxDate);
+
+function getMapData(coordinates, starttime, endtime){
+  var earthquakeDataAPI = "/geoapi/v1.0/earthquakes";
+  var earthquakeDataFilters = { "minlongitude":coordinates[0][0], "minlatitude":coordinates[0][1], "maxlongitude":coordinates[1][0], "maxlatitude":coordinates[1][1]};
+  if(starttime)
+    earthquakeDataFilters["starttime"] = starttime;
+  if(endtime)
+    earthquakeDataFilters["endtime"] = endtime;
+  console.log("earthquakeDataFilters" + JSON.stringify(earthquakeDataFilters));
+
+  $.ajax({
+      url: earthquakeDataAPI,
+      type: 'GET',
+      dataType: 'json',
+      data: earthquakeDataFilters,
+      success: function(response) {
+       
+          map.data.addGeoJson(response);
+          console.log("earthquake data loaded.")
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+          var jso = jQuery.parseJSON(jqXHR.responseText);
+          error_note('section', 'error', '(' + jqXHR.status + ') ' + errorThrown + ' --<br />' + jso.error);
+      }
+  });
+  var faultDataAPI = "/geoapi/v1.0/faults";
+  $.ajax({
+      url: faultDataAPI,
+      type: 'GET',
+      dataType: 'json',
+      data: earthquakeDataFilters,
+      success: function(response) {       
+          map.data.addGeoJson(response);
+          console.log("fault data loaded.")
+      },
+      error: function(jqXHR, textStatus, errorThrown) {
+          var jso = jQuery.parseJSON(jqXHR.responseText);
+          error_note('section', 'error', '(' + jqXHR.status + ') ' + errorThrown + ' --<br />' + jso.error);
+      }
+  });
+}
+
+google.maps.event.addDomListener(window, 'load', function() {
+  minDate = formatDate((30).days().ago());
+  maxDate = formatDate(new Date());
+  console.log("minDate: " + minDate);
+  console.log("maxDate: " + maxDate);
+  $("#starttime").val(minDate);
+  $("#endtime").val(minDate);
+
+  map = new google.maps.Map(document.getElementById('map-canvas'), {
+    center: { lat: 37.745997, lng: -122.506326 },
+    zoom: 8,
+    styles: mapStyle
+  });
+
+  google.maps.event.addListener(map, 'idle', function() {
+    var bounds =  map.getBounds();
+    coordinates = [[bounds.getSouthWest().lng(), bounds.getNorthEast().lat()], [bounds.getNorthEast().lng(), bounds.getSouthWest().lat()]];
+    $("#bounds-box").html(populateBoundsCoordinates(coordinates));
+    getMapData(coordinates);
+  });
+
+  map.data.setStyle(styleFeature);
+  map.data.addListener('mouseover', function(event) {
+    $("#info-box").html(populateInfo(event.feature));
+  });
+  map.data.addListener('click', function(event) {
+    var data = event.feature;
+    if(data){
+      window.open(data.getProperty("url", "_earthquakeInfo"));
+    }
+  });
+
+});
+
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+}
+function populateBoundsCoordinates(coorindates){
+  var boundsCoordinates = "Bounds Coordinates: <br/>";
+  boundsCoordinates += "NW: [" + coorindates[0][0] + ", " + coordinates[0][1] + "]<br/>"
+  boundsCoordinates += "SE: [" + coordinates[1][0] + ", " + coordinates[1][1] + "]";
+  return boundsCoordinates;
+}
+
+function populateInfo(data){
+  var info = "";
+  if(data.getProperty("place"))
+  {
+    info +=  data.getProperty("place") + "<br/>";
+    info += "magnitude: " + data.getProperty("mag") + "<br/>";
+    info += "url: <a href='" + data.getProperty("url") + "' target='_earthquakeInfo'>" + data.getProperty("url") + "</a><br/>";
+    info += new Date(data.getProperty("time"));
+  }
+  else
+  {
+    info +=  data.getProperty("name");
+  }
+
+  return info;
+}
+
+function styleFeature(feature) {
+  var low = [151, 83, 34];   // color of mag 1.0
+  var high = [5, 69, 54];  // color of mag 6.0 and above
+  var minMag = 1.0;
+  var maxMag = 6.0;
+  var featureDate = new Date(feature.getProperty("time"));
+
+  // fraction represents where the value sits between the min and max
+  var fraction_mag = (Math.min(feature.getProperty('mag'), maxMag) - minMag) /
+      (maxMag - minMag);
+  var fraction_time = (Math.min(featureDate, maxDate) - minDate) /
+      (maxDate - minDate);
+
+  var color = interpolateHsl(low, high, fraction_time);
+
+  if(featureDate < minDate){
+    color = "#666666"
+  }
+
+
+  return {
+    icon: {
+      path: google.maps.SymbolPath.CIRCLE,
+      strokeWeight: 0.5,
+      strokeColor: '#fff',
+      fillColor: color,
+      fillOpacity: 2 / feature.getProperty('mag'),
+      // while an exponent would technically be correct, quadratic looks nicer
+      scale: Math.pow(feature.getProperty('mag'), 2)
+    },
+    zIndex: Math.floor(feature.getProperty('mag'))
+  };
+}
+
+function interpolateHsl(lowHsl, highHsl, fraction) {
+  var color = [];
+  for (var i = 0; i < 3; i++) {
+    // Calculate color based on the fraction.
+    color[i] = (highHsl[i] - lowHsl[i]) * fraction + lowHsl[i];
+  }
+
+  return 'hsl(' + color[0] + ',' + color[1] + '%,' + color[2] + '%)';
+}
+
+    </script>
+  </head>
+  <body id="map-container">
+    <div id="map-canvas"></div>
+    <div id="info-panel">
+      <div id="bounds-box">Bound Coordinates: </div>
+      <div id="info-box">Hover over an event for more details</div>
+      <div id="config-box">
+        Start Time: <input type="text" id="starttime"/>
+        End Time: <input type="text" id="endtime"/>
+        <input type="buttom" value="Apply Filter"/>
+      </div>
+    </div>
+  </body>
+</html>

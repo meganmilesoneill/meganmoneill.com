@@ -41,39 +41,50 @@ echo
 echo **************************************************
 echo Installing python
 echo **************************************************
-sudo apt-get install -y python-software-properties
-sudo apt-get install -y python-setuptools python-dev build-essential 
-sudo easy_install pip 
-sudo pip install --upgrade virtualenv
+sudo apt-get install -y python python-pip python-virtualenv 
 sudo apt-get install -y python-bs4
+sudo apt-get install -y gunicorn
+sudo apt-get install -y supervisor
+# sudo apt-get install -y python-software-properties
+# sudo apt-get install -y python-setuptools python-dev build-essential 
+# sudo easy_install pip 
+# sudo pip install --upgrade virtualenv
 
 echo
 echo **************************************************
 echo Installing python-mysql
 echo **************************************************
-
 sudo apt-get install -y python-dev libmysqlclient-dev
-pip install MySQL-python
-sudo dpkg -i mysql-connector-python_2.0.3-1ubuntu14.04_all.deb
 
 sudo apt-get update -y
 
+echo
+echo **************************************************
+echo Configuring Site
+echo **************************************************
+sudo adduser wwwuser
+sudo adduser wwwuser sudo
+passwd wwwuser
 
-# sudo add-apt-repository ppa:webupd8team/java
-# sudo apt-get update
-# sudo apt-get install -y python-setuptools python-dev build-essential 
-# sudo easy_install pip 
-# sudo pip install --upgrade virtualenv
-# sudo add-apt-repository ppa:ubuntugis/ppa
-# sudo apt-get update
-# sudo apt-get install gdal-bin
+cd /vagrant/www/
+# sudo mkdir /home/www && cd /home/www
+sudo virtualenv env
+source env/bin/activate
 
-# sudo apt-get install -y oracle-java8-installer
+sudo pip install Flask==0.10.1
+pip install MySQL-python
+sudo dpkg -i /vagrant/mysql-connector-python_2.0.3-1ubuntu14.04_all.deb
+pip install mysql-connector-python --allow-external mysql-connector-python
 
-# sudo curl -L -O https://download.elasticsearch.org/elasticsearch/elasticsearch/elasticsearch-1.4.2.zip
-# sudo unzip elasticsearch-1.4.2.zip
-# sudo cp -r elasticsearch-1.4.2 /usr/local
-# cd /usr/local/elasticsearch-1.4.2
-#sudo ./bin/plugin -i elasticsearch/marvel/latest
-#sudo ./bin/elasticsearch -d
-#sudo pip install elasticsearch
+sudo rm /etc/nginx/sites-enabled/default
+sudo cp /vagrant/config/www/nginx.config /etc/nginx/sites-available/www
+sudo ln -s /etc/nginx/sites-available/www /etc/nginx/sites-enabled/www
+sudo service nginx restart
+
+sudo cp /vagrant/config/www/supervisor.config /etc/supervisor/conf.d/www.conf
+sudo pkill gunicorn
+sudo supervisorctl reread
+sudo supervisorctl update
+sudo supervisorctl start www
+
+

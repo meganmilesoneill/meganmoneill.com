@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 es = Elasticsearch()
 
-datafile = open("../data/quaternary.geojson")
+datafile = open("./quaternary.geojson")
 #print response.info()
 print datafile.name
 data = json.load(datafile)
