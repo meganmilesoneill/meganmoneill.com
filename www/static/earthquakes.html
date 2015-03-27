@@ -114,12 +114,8 @@ function getMapData(coordinates, starttime, endtime){
 }
 
 google.maps.event.addDomListener(window, 'load', function() {
-  minDate = formatDate((30).days().ago());
-  maxDate = formatDate(new Date());
-  console.log("minDate: " + minDate);
-  console.log("maxDate: " + maxDate);
-  $("#starttime").val(minDate);
-  $("#endtime").val(minDate);
+  $("#starttime").val(formatDate(minDate));
+  $("#endtime").val(formatDate(maxDate));
 
   map = new google.maps.Map(document.getElementById('map-canvas'), {
     center: { lat: 37.745997, lng: -122.506326 },
@@ -131,7 +127,14 @@ google.maps.event.addDomListener(window, 'load', function() {
     var bounds =  map.getBounds();
     coordinates = [[bounds.getSouthWest().lng(), bounds.getNorthEast().lat()], [bounds.getNorthEast().lng(), bounds.getSouthWest().lat()]];
     $("#bounds-box").html(populateBoundsCoordinates(coordinates));
-    getMapData(coordinates);
+    var starttime = $("#starttime").val();
+    if(starttime == "")
+      starttime = null;
+    var endtime = $("#endtime").val();
+    if(endtime == "")
+      endtime = null;
+
+    getMapData(coordinates, starttime, endtime);
   });
 
   map.data.setStyle(styleFeature);
@@ -236,7 +239,7 @@ function interpolateHsl(lowHsl, highHsl, fraction) {
       <div id="config-box">
         Start Time: <input type="text" id="starttime"/>
         End Time: <input type="text" id="endtime"/>
-        <input type="buttom" value="Apply Filter"/>
+        <input type="button" value="Apply Filter"/>
       </div>
     </div>
   </body>

@@ -27,14 +27,24 @@ def get_events():
 	maxlatitude = request.args.get('maxlatitude', 36.682994957749884, type=float)
 	starttime = request.args.get('starttime', "NULL")
 	endtime = request.args.get('endtime', "NULL")
-	event_data = (minlongitude, minlatitude, maxlongitude, maxlatitude, starttime, endtime)
-	# event_data = (minlongitude, minlatitude, maxlongitude, maxlatitude)
-	# event_data = (minlongitude, 38.79394764206436, -119.31754426171875, 36.682994957749884)
 
 	connection = mysql.connector.connect(user='root', password='p@ssw0rd', host='127.0.0.1', database='earthquake_data')
 	cursor = connection.cursor()
-	select_events = "select source from earthquake where MBRContains(Envelope(GeomFromText('LineString(%s %s, %s %s)')), location) = 1 AND time >= COALESCE(UNIX_TIMESTAMP(NULLIF('NULL', %s)) * 1000, time) AND time <= COALESCE(UNIX_TIMESTAMP(NULLIF('NULL', %s)) * 1000, time) order by time asc;"
-	# select_events = "select source from earthquake where MBRContains(Envelope(GeomFromText('LineString(%s %s, %s %s)')), location) = 1 order by time asc;"
+	# select_events = "select source from earthquake where MBRContains(Envelope(GeomFromText('LineString(%s %s, %s %s)')), location) = 1 AND time <= COALESCE(UNIX_TIMESTAMP(STR_TO_DATE(NULLIF(%s, 'NULL'), '%Y-%m-%d')) * 1000, time) order by time asc;"
+
+	select_events = "select source from earthquake where MBRContains(Envelope(GeomFromText('LineString(%s %s, %s %s)')), location) = 1"
+	if starttime != "NULL":
+		select_events += " AND time >= UNIX_TIMESTAMP(STR_TO_DATE('" + starttime + "', '%Y-%m-%d')) * 1000"
+	if endtime != "NULL":
+		select_events += " AND time <= UNIX_TIMESTAMP(STR_TO_DATE('" + endtime + "', '%Y-%m-%d')) * 1000"
+
+	select_events += " order by time asc;"
+
+	print select_events;
+
+	# event_data = (minlongitude, 38.79394764206436, -119.31754426171875, 36.682994957749884)
+	event_data = (minlongitude, minlatitude, maxlongitude, maxlatitude)
+
 	cursor.execute(select_events, event_data)
 
 	feature_list = []
